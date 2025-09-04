@@ -1,25 +1,22 @@
-import std/heapqueue, strformat, dom, sugar
-
+import std/heapqueue, strformat, dom, sugar, intsets
 import jscanvas
 
 from game import Game, Player, Key, processInputs
 
+
 proc onkeydown(game: Game, e: Event) =
-    let event = e.KeyboardEvent
-    
-    for keyCode in Key.low..Key.high:
-        if keyCode.ord() == event.keyCode:
-            game.inputQueue.push(event)
-            return
-    echo fmt"Unhandled key {event.key}"
+    game.keyboard.incl(e.KeyboardEvent.keyCode)
+
+proc onkeyup(game: Game, e: Event) =
+    game.keyboard.excl(e.KeyboardEvent.keyCode)
 
 proc gameUpdate(game: Game, time: float) = 
-    # Process input queue
+    # Check for key presses
     processInputs(game)
 
     # Draw background
-    game.canvasContext.fillStyle = "grey"
-    game.canvasContext.fillRect(0,0,500,500)
+    game.canvasContext.fillStyle = game.canvasColor
+    game.canvasContext.fillRect(0,0,game.canvasWidth,game.canvasWidth)
 
     # Draw player
     game.canvasContext.fillStyle = game.player.color
@@ -38,8 +35,7 @@ proc onLoad(event: Event) {.exportc.} =
     # Create game and canvas
     let canvas = document.getElementById("gameCanvas").CanvasElement
     let ctx = canvas.getContext2d()
-    var game = Game(player : Player(location : (250, 250),
-                                          sprite : (10, 10)),
+    var game = Game(player : Player(),
                           canvas : canvas,
                           canvasContext : ctx)
 
@@ -48,6 +44,7 @@ proc onLoad(event: Event) {.exportc.} =
 
     # Add keypress listener
     document.addEventListener("keydown", (event: Event) => onkeydown(game, event))
+    document.addEventListener("keyup", (event: Event) => onkeyup(game, event))
     echo "Game start"
 
 window.onload = onLoad

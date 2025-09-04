@@ -1,4 +1,4 @@
-import std/heapqueue, strformat
+import std/heapqueue, strformat, intsets
 import jscanvas
 
 from dom import Event, KeyboardEvent
@@ -9,15 +9,17 @@ type
     Coordinate* = tuple[x: float, y: float]
 
     Game* = ref object
+        keyboard*: IntSet
         player*: Player
         canvas*: CanvasElement
         canvasContext*: CanvasContext
-        inputQueue*: HeapQueue[Event]
+        canvasColor* = "#7b8210"
+        canvasWidth* = 512
     
     Player* = ref object
-        location*: Coordinate = (x: 250, y: 250)
-        sprite* = (w: 10, h: 10)
-        color* = "black"
+        location*: Coordinate = (x: 256, y: 256)
+        sprite* = (w: 32, h: 32)
+        color* = "#39594a"
         speed*: float = 3
     
     Projectile* = ref object
@@ -34,22 +36,15 @@ proc processInputs*(game: Game) =
     var xMove = 0
     var yMove = 0
 
-    # Loop through input queue
-    for evt in game.inputQueue:
-        case Key(evt.KeyboardEvent.keyCode):
-        of Key.LeftArrow:
-            xMove = -1
-        of Key.RightArrow:
-            xMove = 1
-        of Key.UpArrow:
-            yMove = -1
-        of Key.DownArrow:
-            yMove = 1
-        else:
-            discard
-    
-    # Clear input queue
-    game.inputQueue.clear()
+    # Check keys against keyboard state
+    if ord(Key.LeftArrow) in game.keyboard:
+        xMove = -1
+    if ord(Key.RightArrow) in game.keyboard:
+        xMove = 1
+    if ord(Key.UpArrow) in game.keyboard:
+        yMove = -1
+    if ord(Key.DownArrow) in game.keyboard:
+        yMove = 1
 
     # Move player
     var direction: (float, float) = normalize(xMove, yMove)
