@@ -1,13 +1,12 @@
 import strformat, intsets
 import std/times
-from dom import Event, KeyboardEvent
 import jscanvas
 
+from draw import Drawable, draw
 from utils import normalize
 
-type
-    Coordinate* = tuple[x: float, y: float]
 
+type
     Game* = ref object
         keyboard*: IntSet
         player*: Player
@@ -18,42 +17,51 @@ type
         deltaTime*: int64
         lastUpdate*: Time
     
-    Player* = ref object
-        location*: Coordinate = (x: 256, y: 256)
-        sprite* = (w: 32, h: 32)
-        color* = "#39594a"
+    Player* = ref object of Drawable
         speed*: float = 0.3
-    
-    Projectile* = ref object
-        location* = (x: 0, y: 0)
-        radius* = 2
-        speed* = 1
 
     Key* {.pure.} = enum
-        LeftArrow = 37, UpArrow = 38, RightArrow = 39,
-        DownArrow = 40
+        LeftArrow = 37, UpArrow = 38,
+        RightArrow = 39, DownArrow = 40
 
-proc processInputs*(game: Game) = 
+proc processInputs(self: Game) = 
     # Player movement
     var xMove = 0
     var yMove = 0
 
     # Check keys against keyboard state
-    if ord(Key.LeftArrow) in game.keyboard:
+    if ord(Key.LeftArrow) in self.keyboard:
         xMove = -1
-    if ord(Key.RightArrow) in game.keyboard:
+    if ord(Key.RightArrow) in self.keyboard:
         xMove = 1
-    if ord(Key.UpArrow) in game.keyboard:
+    if ord(Key.UpArrow) in self.keyboard:
         yMove = -1
-    if ord(Key.DownArrow) in game.keyboard:
+    if ord(Key.DownArrow) in self.keyboard:
         yMove = 1
 
     # Move player
     var direction: (float, float) = normalize(xMove, yMove)
     if direction[0] != 0:
-        game.player.location.x += game.player.speed * float(game.deltaTime) * direction[0]
+        self.player.location.x += self.player.speed * float(self.deltaTime) * direction[0]
     if direction[1] != 0:
-        game.player.location.y += game.player.speed * float(game.deltaTime) * direction[1]
+        self.player.location.y += self.player.speed * float(self.deltaTime) * direction[1]
 
-    #echo fmt"x:{game.player.location.x} y:{game.player.location}"
-    echo fmt"{game.deltaTime}"
+proc drawAll(self: Game) = 
+    # Draw background
+    self.canvasContext.fillStyle = self.canvasColor
+    self.canvasContext.fillRect(0, 0, self.canvasWidth, self.canvasWidth)
+
+    # Draw player
+    self.player.draw(self.canvasContext)
+
+proc update*(self: Game) = 
+    # Calculate deltatime
+    var currentTime = getTime()
+    self.deltaTime = inMilliseconds(currentTime - self.lastUpdate)
+    self.lastUpdate = currentTime
+
+    # Check for key presses
+    self.processInputs()
+
+    # Draw scene
+    self.drawAll()

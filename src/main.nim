@@ -2,7 +2,8 @@ import dom, sugar, intsets, strformat
 import std/times
 import jscanvas
 
-from game import Game, Player, Key, processInputs
+from game import Game, Player, update
+
 
 proc onkeydown(game: Game, e: Event) =
     game.keyboard.incl(e.KeyboardEvent.keyCode)
@@ -10,31 +11,12 @@ proc onkeydown(game: Game, e: Event) =
 proc onkeyup(game: Game, e: Event) =
     game.keyboard.excl(e.KeyboardEvent.keyCode)
 
-proc gameUpdate(game: Game, time: float) = 
-    # Calculate deltatime
-    var currentTime = getTime()
-    game.deltaTime = inMilliseconds(currentTime - game.lastUpdate)
-    game.lastUpdate = currentTime
-
-    # Check for key presses
-    processInputs(game)
-
-    # Draw background
-    game.canvasContext.fillStyle = game.canvasColor
-    game.canvasContext.fillRect(0,0,game.canvasWidth,game.canvasWidth)
-
-    # Draw player
-    game.canvasContext.fillStyle = game.player.color
-    game.canvasContext.fillRect(game.player.location.x, game.player.location.y, game.player.sprite.w, game.player.sprite.h)
-
-
 proc onTick(game: Game, time: float) =
     # Schedule next tick
     discard window.requestAnimationFrame((time: float) => onTick(game, time))
 
-    # Game state update
-    gameUpdate(game, time)
-
+    # Update game state
+    game.update()
 
 proc onLoad(event: Event) {.exportc.} =
     # Create game and canvas
