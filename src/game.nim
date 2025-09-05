@@ -1,7 +1,7 @@
-import std/heapqueue, strformat, intsets
-import jscanvas
-
+import strformat, intsets
+import std/times
 from dom import Event, KeyboardEvent
+import jscanvas
 
 from utils import normalize
 
@@ -15,12 +15,14 @@ type
         canvasContext*: CanvasContext
         canvasColor* = "#7b8210"
         canvasWidth* = 512
+        deltaTime*: int64
+        lastUpdate*: Time
     
     Player* = ref object
         location*: Coordinate = (x: 256, y: 256)
         sprite* = (w: 32, h: 32)
         color* = "#39594a"
-        speed*: float = 3
+        speed*: float = 0.3
     
     Projectile* = ref object
         location* = (x: 0, y: 0)
@@ -49,8 +51,9 @@ proc processInputs*(game: Game) =
     # Move player
     var direction: (float, float) = normalize(xMove, yMove)
     if direction[0] != 0:
-        game.player.location.x += game.player.speed*direction[0]
+        game.player.location.x += game.player.speed * float(game.deltaTime) * direction[0]
     if direction[1] != 0:
-        game.player.location.y += game.player.speed*direction[1]
+        game.player.location.y += game.player.speed * float(game.deltaTime) * direction[1]
 
-    echo fmt"x:{game.player.location.x} y:{game.player.location}"
+    #echo fmt"x:{game.player.location.x} y:{game.player.location}"
+    echo fmt"{game.deltaTime}"

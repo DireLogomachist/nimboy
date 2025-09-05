@@ -1,8 +1,8 @@
-import std/heapqueue, strformat, dom, sugar, intsets
+import dom, sugar, intsets, strformat
+import std/times
 import jscanvas
 
 from game import Game, Player, Key, processInputs
-
 
 proc onkeydown(game: Game, e: Event) =
     game.keyboard.incl(e.KeyboardEvent.keyCode)
@@ -11,6 +11,11 @@ proc onkeyup(game: Game, e: Event) =
     game.keyboard.excl(e.KeyboardEvent.keyCode)
 
 proc gameUpdate(game: Game, time: float) = 
+    # Calculate deltatime
+    var currentTime = getTime()
+    game.deltaTime = inMilliseconds(currentTime - game.lastUpdate)
+    game.lastUpdate = currentTime
+
     # Check for key presses
     processInputs(game)
 
