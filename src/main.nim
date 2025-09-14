@@ -1,8 +1,8 @@
-import dom, sugar, intsets, strformat
-import std/times
+import dom, sugar, intsets
 import jscanvas
 
 from game import Game, Player, update
+from draw import SpriteDrawable, loadImage, newImageElement
 
 
 proc onkeydown(game: Game, e: Event) =
@@ -24,7 +24,11 @@ proc onLoad(event: Event) {.exportc.} =
     let ctx = canvas.getContext2d()
     var game = Game(player : Player(),
                           canvas : canvas,
-                          canvasContext : ctx)
+                          canvasContext : ctx,
+                          testSprite : SpriteDrawable(spriteImage : newImageElement()))
+
+    # Load test image
+    game.testSprite.loadImage()
 
     # Start game loop
     onTick(game, 16)

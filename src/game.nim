@@ -2,7 +2,7 @@ import strformat, intsets
 import std/times
 import jscanvas
 
-from draw import Drawable, draw
+from draw import Drawable, SpriteDrawable, draw, loadImage
 from utils import normalize
 
 
@@ -16,6 +16,8 @@ type
         canvasWidth* = 512
         deltaTime*: int64
         lastUpdate*: Time
+
+        testSprite*: SpriteDrawable
     
     Player* = ref object of Drawable
         speed*: float = 0.3
@@ -53,6 +55,9 @@ proc drawAll(self: Game) =
 
     # Draw player
     self.player.draw(self.canvasContext)
+    
+    # Draw test sprite
+    self.testSprite.draw(self.canvasContext)
 
 proc update*(self: Game) = 
     # Calculate deltatime
