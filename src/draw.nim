@@ -1,4 +1,4 @@
-import dom, strformat
+import dom, tables
 from math import round
 import jscanvas
 
@@ -9,11 +9,11 @@ type
     Drawable* = ref object of RootObj
         location*: Coordinate = (x: 128, y: 128)
         rotation*: float = 0
-        size* = (w: 32, h: 32)
+        size* = (w: 16, h: 16)
         color* = "#294139"
     
     SpriteDrawable* = ref object of Drawable
-        spriteFile*: string = "src/assets/plummet_player.png"
+        spriteFile*: string = "plummet_player.png"
         spriteImage*: ImageElement
 
 # The dom ImageElement class for some reason does not behave like a full HTML5 ImageElement
@@ -32,8 +32,7 @@ proc draw*(self: SpriteDrawable, context: CanvasContext) =
         context.drawImage(self.spriteImage,
                           round(self.location.x - self.size.w/2), round(self.location.y - self.size.h/2))
 
-proc loadImage*(self: SpriteDrawable) =
+proc loadImage*(self: SpriteDrawable, assetCache: Table[string, ImageElement]) =
+    self.spriteImage = assetCache[self.spriteFile]
     self.spriteImage.width = self.size.w
     self.spriteImage.height = self.size.h
-    self.spriteImage.src = self.spriteFile
-

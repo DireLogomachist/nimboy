@@ -1,18 +1,23 @@
-import strformat, intsets
+import intsets, tables, sugar
+from dom import ImageElement, Event, window, requestAnimationFrame
+from std/paths import Path
+from std/paths import extractFilename
 import std/times
-import jscanvas
+import jscanvas except Path
 
-from draw import Drawable, SpriteDrawable, draw, loadImage
+from draw import Drawable, SpriteDrawable, draw, newImageElement, loadImage
 from utils import normalize
 
 
 type
     Game* = ref object
         keyboard*: IntSet
+        assetCache*: Table[string, ImageElement]
+        assetCounter: int
         player*: Player
         canvas*: CanvasElement
         canvasContext*: CanvasContext
-        canvasColor* = "#7b8210"
+        canvasColor* = cstring("#7b8210")
         canvasWidth* = 512
         deltaTime*: int64
         lastUpdate*: Time
@@ -23,6 +28,10 @@ type
     Key* {.pure.} = enum
         LeftArrow = 37, UpArrow = 38,
         RightArrow = 39, DownArrow = 40
+
+const assetList = [
+    "src/assets/plummet_player.png"
+]
 
 proc processInputs(self: Game) = 
     # Player movement
@@ -52,6 +61,8 @@ proc drawAll(self: Game) =
     self.canvasContext.fillRect(0, 0, self.canvasWidth, self.canvasWidth)
 
     # Draw player
+    if self.player.spriteImage == nil:
+        self.player.loadImage(self.assetCache)
     self.player.draw(self.canvasContext)
 
 proc update*(self: Game) = 
@@ -65,3 +76,23 @@ proc update*(self: Game) =
 
     # Draw scene
     self.drawAll()
+
+proc tick(self: Game, time: float) =
+    # Schedule next tick
+    discard window.requestAnimationFrame((time: float) => tick(self, time))
+
+    # Update game state
+    self.update()
+
+proc assetReady(self: Game, asset: string, image: ImageElement, e: Event) =
+    self.assetCounter += 1
+    self.assetCache[string(extractFilename(Path(asset)))] = image
+    # Once all loaded, start game tick
+    if len(assetList) == self.assetCounter:
+        self.tick(16)
+
+proc loadAssetsAndStart*(self: Game) = 
+    for assetFile in assetList:
+        var assetImage: ImageElement = newImageElement()
+        assetImage.onload = (event: Event) => self.assetReady(assetFile, assetImage, event)
+        assetImage.src = cstring(assetFile)
