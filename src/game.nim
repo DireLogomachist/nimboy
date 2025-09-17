@@ -16,10 +16,8 @@ type
         canvasWidth* = 512
         deltaTime*: int64
         lastUpdate*: Time
-
-        testSprite*: SpriteDrawable
     
-    Player* = ref object of Drawable
+    Player* = ref object of SpriteDrawable
         speed*: float = 0.3
 
     Key* {.pure.} = enum
@@ -55,9 +53,6 @@ proc drawAll(self: Game) =
 
     # Draw player
     self.player.draw(self.canvasContext)
-    
-    # Draw test sprite
-    self.testSprite.draw(self.canvasContext)
 
 proc update*(self: Game) = 
     # Calculate deltatime

@@ -22,13 +22,12 @@ proc onLoad(event: Event) {.exportc.} =
     # Create game and canvas
     let canvas = document.getElementById("gameCanvas").CanvasElement
     let ctx = canvas.getContext2d()
-    var game = Game(player : Player(),
+    var game = Game(player : Player(spriteImage: newImageElement()),
                           canvas : canvas,
-                          canvasContext : ctx,
-                          testSprite : SpriteDrawable(spriteImage : newImageElement()))
+                          canvasContext : ctx)
 
     # Load test image
-    game.testSprite.loadImage()
+    game.player.loadImage()
 
     # Start game loop
     onTick(game, 16)
