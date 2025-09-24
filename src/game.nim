@@ -23,7 +23,7 @@ type
         lastUpdate*: Time
     
     Player* = ref object of SpriteDrawable
-        speed*: float = 0.3
+        speed*: float = 0.2
 
     Key* {.pure.} = enum
         LeftArrow = 37, UpArrow = 38,

@@ -7,7 +7,7 @@ type
     Coordinate* = tuple[x: float, y: float]
 
     Drawable* = ref object of RootObj
-        location*: Coordinate = (x: 128, y: 128)
+        location*: Coordinate = (x: 64, y: 64)
         rotation*: float = 0
         size* = (w: 16, h: 16)
         color* = "#294139"
