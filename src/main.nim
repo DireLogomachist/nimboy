@@ -2,7 +2,6 @@ import dom, sugar, intsets
 import jscanvas
 
 from game import Game, Player, loadAssetsAndStart
-from draw import SpriteDrawable, newImageElement
 
 
 proc onkeydown(game: Game, e: Event) =

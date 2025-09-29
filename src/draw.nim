@@ -6,9 +6,11 @@ import jscanvas
 type
     Coordinate* = tuple[x: float, y: float]
 
+    Size* = tuple[w: float, l: float]
+
     Drawable* = ref object of RootObj
-        location*: Coordinate = (x: 64, y: 64)
-        rotation*: float = 0
+        loc*: Coordinate = (x: 64, y: 64)
+        rot*: float = 0
         size* = (w: 16, h: 16)
         color* = "#294139"
     
@@ -23,14 +25,14 @@ proc newImageElement*(): ImageElement {.importcpp: "new Image()", constructor.}
 
 proc draw*(self: Drawable, context: CanvasContext) = 
     context.fillStyle = self.color
-    context.fillRect(round(self.location.x - self.size.w/2), round(self.location.y - self.size.h/2),
+    context.fillRect(round(self.loc.x - self.size.w/2), round(self.loc.y - self.size.h/2),
                            self.size.w, self.size.h)
 
 proc draw*(self: SpriteDrawable, context: CanvasContext) =
     context.imageSmoothingEnabled = false
     if self.spriteImage.complete:
         context.drawImage(self.spriteImage,
-                          round(self.location.x - self.size.w/2), round(self.location.y - self.size.h/2))
+                          round(self.loc.x - self.size.w/2), round(self.loc.y - self.size.h/2))
 
 proc loadImage*(self: SpriteDrawable, assetCache: Table[string, ImageElement]) =
     self.spriteImage = assetCache[self.spriteFile]

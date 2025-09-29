@@ -51,9 +51,9 @@ proc processInputs(self: Game) =
     # Move player
     var direction: (float, float) = normalize(xMove, yMove)
     if direction[0] != 0:
-        self.player.location.x += self.player.speed * float(self.deltaTime) * direction[0]
+        self.player.loc.x += self.player.speed * float(self.deltaTime) * direction[0]
     if direction[1] != 0:
-        self.player.location.y += self.player.speed * float(self.deltaTime) * direction[1]
+        self.player.loc.y += self.player.speed * float(self.deltaTime) * direction[1]
 
 proc drawAll(self: Game) = 
     # Draw background
