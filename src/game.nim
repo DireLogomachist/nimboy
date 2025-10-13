@@ -1,11 +1,12 @@
 import intsets, tables, sugar
 from dom import ImageElement, Event, window, requestAnimationFrame
-from std/paths import Path
-from std/paths import extractFilename
+from std/paths import Path, extractFilename
 import std/times
 import jscanvas except Path
 
-from draw import Drawable, SpriteDrawable, draw, newImageElement, loadImage
+from draw import Drawable, SpriteDrawable, draw, newImageElement
+from gameobj import GameObject, update, draw
+import player
 from utils import normalize
 
 
@@ -15,15 +16,13 @@ type
         assetCache*: Table[string, ImageElement]
         assetCounter: int
         player*: Player
+        gameObjectList*: seq[GameObject]
         canvas*: CanvasElement
         canvasContext*: CanvasContext
         canvasColor* = cstring("#7b8210")
         canvasWidth* = 512
         deltaTime*: int64
         lastUpdate*: Time
-    
-    Player* = ref object of SpriteDrawable
-        speed*: float = 0.2
 
     Key* {.pure.} = enum
         LeftArrow = 37, UpArrow = 38,
@@ -60,10 +59,12 @@ proc drawAll(self: Game) =
     self.canvasContext.fillStyle = self.canvasColor
     self.canvasContext.fillRect(0, 0, self.canvasWidth, self.canvasWidth)
 
+    # Draw game objects
+    for gameObject in self.gameObjectList:
+        gameObject.draw(self.canvasContext)
+
     # Draw player
-    if self.player.spriteImage == nil:
-        self.player.loadImage(self.assetCache)
-    self.player.draw(self.canvasContext)
+    self.player.draw(self.canvasContext, self.assetCache)
 
 proc update*(self: Game) = 
     # Calculate deltatime
@@ -73,6 +74,10 @@ proc update*(self: Game) =
 
     # Check for key presses
     self.processInputs()
+
+    # Game object updates
+    for gameObject in self.gameObjectList:
+        gameObject.update()
 
     # Draw scene
     self.drawAll()

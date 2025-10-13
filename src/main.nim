@@ -1,7 +1,11 @@
 import dom, sugar, intsets
 import jscanvas
 
-from game import Game, Player, loadAssetsAndStart
+from draw import Drawable
+from game import Game, loadAssetsAndStart
+from gameobj import GameObject, addCollider
+import player
+import collision
 
 
 proc onkeydown(game: Game, e: Event) =
@@ -14,9 +18,22 @@ proc onLoad(event: Event) {.exportc.} =
     # Create game and canvas
     let canvas = document.getElementById("gameCanvas").CanvasElement
     let ctx = canvas.getContext2d()
-    var game = Game(player : Player(),
+    var player = newPlayer()
+
+    var game = Game(player : player,
                           canvas : canvas,
                           canvasContext : ctx)
+
+    var testEnemy = GameObject()
+    testEnemy.loc = (x:125, y:125)
+    testEnemy.sprite = Drawable(loc:(x:0, y:0), size:(w:20, h:20))
+    testEnemy.sprite.parent = testEnemy
+
+    var col: ColliderBox = ColliderBox(size:(w:50, h:50))
+    col.drawOutline = true
+
+    testEnemy.addCollider(col)
+    game.gameObjectList.add(testEnemy)
 
     # Load assets, start game once done
     game.loadAssetsAndStart()
