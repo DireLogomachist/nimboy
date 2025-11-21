@@ -5,7 +5,7 @@ import std/times
 import jscanvas except Path
 
 from draw import Drawable, SpriteDrawable, draw, newImageElement
-from gameobj import GameObject, update, draw
+from gameobj import GameObject, update, draw, checkCollisions
 import player
 from utils import normalize
 
@@ -16,7 +16,9 @@ type
         assetCache*: Table[string, ImageElement]
         assetCounter: int
         player*: Player
+        gameObjectCounter*: int = 0
         gameObjectList*: seq[GameObject]
+        collisionMap*: Table[int, int]
         canvas*: CanvasElement
         canvasContext*: CanvasContext
         canvasColor* = cstring("#7b8210")
@@ -72,7 +74,13 @@ proc update*(self: Game) =
     self.deltaTime = inMilliseconds(currentTime - self.lastUpdate)
     self.lastUpdate = currentTime
 
-    # Check for key presses
+    # Check collisions of player against all objects
+    self.collisionMap.clear()
+    for gameObject in self.gameObjectList:
+        if self.player.checkCollisions(gameObject):
+            self.collisionMap[gameObject.id] = 0
+
+    # Check for key presses, player updating
     self.processInputs()
 
     # Game object updates
@@ -88,6 +96,11 @@ proc tick(self: Game, time: float) =
 
     # Update game state
     self.update()
+
+proc registerGameObject*(self: Game, gameObject: GameObject) =
+    self.gameObjectCounter = self.gameObjectCounter + 1
+    gameObject.id = self.gameObjectCounter
+    self.gameObjectList.add(gameObject)
 
 proc assetReady(self: Game, asset: string, image: ImageElement, e: Event) =
     self.assetCounter += 1

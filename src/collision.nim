@@ -14,7 +14,10 @@ type
     ColliderCircle* = ref object of Collider
         radius*: float = 8
 
-proc collisionCheck*(a: ColliderBox, b: ColliderBox): bool =
+method collisionCheck*(a: Collider, b: Collider): bool = 
+    discard
+
+method collisionCheck*(a: ColliderBox, b: ColliderBox): bool =
     var a_global = a.getGlobalLocation()
     var b_global = b.getGlobalLocation()
     if (a_global.x + a.size.w < b_global.x):
@@ -27,7 +30,7 @@ proc collisionCheck*(a: ColliderBox, b: ColliderBox): bool =
         return false
     return true
 
-proc collisionCheck*(a: ColliderCircle, b: ColliderCircle): bool = 
+method collisionCheck*(a: ColliderCircle, b: ColliderCircle): bool = 
     var a_global = a.getGlobalLocation()
     var b_global = b.getGlobalLocation()
     var collider_dist = sqrt((a_global.x - b_global.x)^2 + (a_global.y - b_global.y)^2)
@@ -36,10 +39,10 @@ proc collisionCheck*(a: ColliderCircle, b: ColliderCircle): bool =
         return false
     return true
 
-proc collisionCheck*(a: ColliderCircle, b: ColliderBox): bool = 
+method collisionCheck*(a: ColliderCircle, b: ColliderBox): bool = 
     discard
 
-proc collisionCheck*(a: ColliderBox, b: ColliderCircle): bool = 
+method collisionCheck*(a: ColliderBox, b: ColliderCircle): bool = 
     return collisionCheck(b, a)
 
 method draw*(self: Collider, context: CanvasContext) =

@@ -2,7 +2,7 @@ import dom, sugar, intsets
 import jscanvas
 
 from draw import Drawable
-from game import Game, loadAssetsAndStart
+from game import Game, loadAssetsAndStart, registerGameObject
 from gameobj import GameObject, addCollider
 import player
 import collision
@@ -33,7 +33,7 @@ proc onLoad(event: Event) {.exportc.} =
     col.drawOutline = true
 
     testEnemy.addCollider(col)
-    game.gameObjectList.add(testEnemy)
+    game.registerGameObject(testEnemy)
 
     # Load assets, start game once done
     game.loadAssetsAndStart()
