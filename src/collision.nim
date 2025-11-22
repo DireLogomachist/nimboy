@@ -34,10 +34,10 @@ method collisionCheck*(a: ColliderCircle, b: ColliderCircle): bool =
     var a_global = a.getGlobalLocation()
     var b_global = b.getGlobalLocation()
     var collider_dist = sqrt((a_global.x - b_global.x)^2 + (a_global.y - b_global.y)^2)
-    var touch_dist = a.radius + b.radius
-    if touch_dist > collider_dist:
-        return false
-    return true
+    var touch_min_dist = a.radius + b.radius
+    if collider_dist < touch_min_dist:
+        return true
+    return false
 
 method collisionCheck*(a: ColliderCircle, b: ColliderBox): bool = 
     discard
@@ -59,4 +59,5 @@ method draw*(self: ColliderCircle, context: CanvasContext) =
     var global = self.getGlobalLocation()
     context.beginPath()
     context.arc(global.x, global.y, self.radius, 0, Pi*2)
+    context.stroke()
     context.closePath()
