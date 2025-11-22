@@ -20,13 +20,13 @@ method collisionCheck*(a: Collider, b: Collider): bool =
 method collisionCheck*(a: ColliderBox, b: ColliderBox): bool =
     var a_global = a.getGlobalLocation()
     var b_global = b.getGlobalLocation()
-    if (a_global.x + a.size.w < b_global.x):
+    if ((a_global.x - a.size.w/2 + a.size.w) < (b_global.x - b.size.w/2)):
         return false
-    if (a_global.x > b_global.x + b.size.w):
+    if ((a_global.x - a.size.w/2) > (b_global.x - b.size.w/2 + b.size.w)):
         return false
-    if (a_global.y + a.size.h < b_global.y):
+    if ((a_global.y - a.size.h/2 + a.size.h) < (b_global.y - b.size.h/2)):
         return false
-    if (a_global.y > b_global.y + b.size.h):
+    if ((a_global.y - a.size.h/2) > (b_global.y - b.size.h/2 + b.size.h)):
         return false
     return true
 
