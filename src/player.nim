@@ -3,7 +3,7 @@ from dom import ImageElement
 import jscanvas except Path
 
 from gameobj import GameObject, addCollider
-from collision import ColliderBox, draw
+from collision import ColliderBox, ColliderCircle, draw
 from draw import Drawable, SpriteDrawable, load, draw
 
 

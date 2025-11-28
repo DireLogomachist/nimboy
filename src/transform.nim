@@ -10,6 +10,9 @@ type
 proc `+`*(a: Coordinate, b: Coordinate): Coordinate =
     return (x:a.x + b.x, y:a.y + b.y)
 
+proc `-`*(a: Coordinate, b: Coordinate): Coordinate =
+    return (x:a.x - b.x, y:a.y - b.y)
+
 proc getGlobalLocation*(self: TransformObject): Coordinate =
     if self.parent != nil:
         return self.loc + self.parent.getGlobalLocation()
