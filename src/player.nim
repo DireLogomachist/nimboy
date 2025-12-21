@@ -5,6 +5,7 @@ import jscanvas except Path
 from gameobj import GameObject, addCollider
 from collision import ColliderBox, ColliderCircle, draw
 from draw import Drawable, SpriteDrawable, load, draw
+import transform
 
 
 type

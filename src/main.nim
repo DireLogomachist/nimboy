@@ -2,7 +2,7 @@ import dom, sugar, intsets
 import jscanvas
 
 from draw import Drawable
-from game import Game, loadAssetsAndStart, registerGameObject
+from game import Game, GameInstance, loadAssetsAndStart, registerGameObject
 from gameobj import GameObject, addCollider
 import player
 import collision
@@ -15,14 +15,8 @@ proc onkeyup(game: Game, e: Event) =
     game.keyboard.excl(e.KeyboardEvent.keyCode)
 
 proc onLoad(event: Event) {.exportc.} =
-    # Create game and canvas
-    let canvas = document.getElementById("gameCanvas").CanvasElement
-    let ctx = canvas.getContext2d()
-    var player = newPlayer()
-
-    var game = Game(player : player,
-                          canvas : canvas,
-                          canvasContext : ctx)
+    # Create game
+    var game = GameInstance()
 
     var testEnemy = GameObject()
     testEnemy.loc = (x:125, y:125)

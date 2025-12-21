@@ -1,5 +1,5 @@
 import intsets, tables, sugar
-from dom import ImageElement, Event, window, requestAnimationFrame
+from dom import document, getElementById, ImageElement, Event, window, requestAnimationFrame
 from std/paths import Path, extractFilename
 import std/times
 import jscanvas except Path
@@ -33,6 +33,21 @@ type
 const assetList = [
     "src/assets/plummet_player.png"
 ]
+
+proc newGame*(): Game =
+    let canvas = document.getElementById("gameCanvas").CanvasElement
+    let ctx = canvas.getContext2d()
+    var player = newPlayer()
+
+    return Game(player: player, canvas: canvas, canvasContext: ctx)
+
+proc GameInstance*(): Game =
+    var game {.global.}: Game
+    if isNil(game):
+        game = newGame()
+        return game
+    else:
+        return game
 
 proc processInputs(self: Game) = 
     # Player movement
