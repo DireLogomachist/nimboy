@@ -10,6 +10,7 @@ type
         size* = (w: 16, h: 16)
         color* = "#294139"
         loaded* = false
+        enabled* = true
     
     SpriteDrawable* = ref object of Drawable
         spriteFile*: string = "plummet_player.png"
@@ -21,17 +22,19 @@ type
 proc newImageElement*(): ImageElement {.importcpp: "new Image()", constructor.}
 
 method draw*(self: Drawable, context: CanvasContext) = 
-    var global = self.getGlobalLocation()
-    context.fillStyle = self.color
-    context.fillRect(round(global.x - self.size.w/2), round(global.y - self.size.h/2),
-                           self.size.w, self.size.h)
+    if self.enabled:
+        var global = self.getGlobalLocation()
+        context.fillStyle = self.color
+        context.fillRect(round(global.x - self.size.w/2), round(global.y - self.size.h/2),
+                            self.size.w, self.size.h)
 
 method draw*(self: SpriteDrawable, context: CanvasContext) =
-    var global = self.getGlobalLocation()
-    context.imageSmoothingEnabled = false
-    if self.spriteImage.complete:
-        context.drawImage(self.spriteImage,
-                          round(global.x - self.size.w/2), round(global.y - self.size.h/2))
+    if self.enabled:
+        var global = self.getGlobalLocation()
+        context.imageSmoothingEnabled = false
+        if self.spriteImage.complete:
+            context.drawImage(self.spriteImage,
+                            round(global.x - self.size.w/2), round(global.y - self.size.h/2))
 
 method load*(self: Drawable, assetCache: Table[string, ImageElement]) =
     self.loaded = true

@@ -5,6 +5,7 @@ type
 
     TransformObject* = ref object of RootObj
         loc*: Coordinate = (x: 0.0, y: 0.0)
+        rot*: float = 0.0f
         parent*: TransformObject
 
 proc `+`*(a: Coordinate, b: Coordinate): Coordinate =
