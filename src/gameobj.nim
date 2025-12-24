@@ -12,7 +12,7 @@ type
         colliders*: seq[Collider]
         onCollide*: proc()
 
-method update*(self: GameObject) = 
+method update*(self: GameObject, deltatime: float) {.base.} = 
     discard
 
 proc draw*(self: GameObject, context: CanvasContext) = 

@@ -23,7 +23,7 @@ type
         canvasContext*: CanvasContext
         canvasColor* = cstring("#7b8210")
         canvasWidth* = 512
-        deltaTime*: int64
+        deltaTime*: float
         lastUpdate*: Time
 
     Key* {.pure.} = enum
@@ -67,9 +67,9 @@ proc processInputs(self: Game) =
     # Move player
     var direction: (float, float) = normalize(xMove, yMove)
     if direction[0] != 0:
-        self.player.loc.x += self.player.speed * float(self.deltaTime) * direction[0]
+        self.player.loc.x += self.player.speed * self.deltaTime * direction[0]
     if direction[1] != 0:
-        self.player.loc.y += self.player.speed * float(self.deltaTime) * direction[1]
+        self.player.loc.y += self.player.speed * self.deltaTime * direction[1]
 
 proc drawAll(self: Game) = 
     # Draw background
@@ -86,7 +86,7 @@ proc drawAll(self: Game) =
 proc update*(self: Game) = 
     # Calculate deltatime
     var currentTime = getTime()
-    self.deltaTime = inMilliseconds(currentTime - self.lastUpdate)
+    self.deltaTime = float(inMilliseconds(currentTime - self.lastUpdate))
     self.lastUpdate = currentTime
 
     # Check collisions of player against all objects
@@ -100,7 +100,7 @@ proc update*(self: Game) =
 
     # Game object updates
     for gameObject in self.gameObjectList:
-        gameObject.update()
+        gameObject.update(self.deltaTime)
 
     # Draw scene
     self.drawAll()

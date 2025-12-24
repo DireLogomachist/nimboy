@@ -25,7 +25,7 @@ proc newPlayer*(): Player =
     player.addCollider(col)
     return player
 
-method draw*(self: Player, context: CanvasContext, assetCache: Table[string, ImageElement]) = 
+method draw*(self: Player, context: CanvasContext, assetCache: Table[string, ImageElement]) {.base.} = 
     if self.sprite.loaded != true:
         self.sprite.load(assetCache)
     self.sprite.draw(context)

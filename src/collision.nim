@@ -14,7 +14,7 @@ type
     ColliderCircle* = ref object of Collider
         radius*: float = 8
 
-method collisionCheck*(a: Collider, b: Collider): bool = 
+method collisionCheck*(a: Collider, b: Collider): bool {.base.} = 
     discard
 
 method collisionCheck*(a: ColliderBox, b: ColliderBox): bool =
@@ -78,7 +78,7 @@ method collisionCheck*(circle: ColliderCircle, box: ColliderBox): bool =
 method collisionCheck*(a: ColliderBox, b: ColliderCircle): bool = 
     return collisionCheck(b, a)
 
-method draw*(self: Collider, context: CanvasContext) =
+method draw*(self: Collider, context: CanvasContext) {.base.} =
     discard
 
 method draw*(self: ColliderBox, context: CanvasContext) =

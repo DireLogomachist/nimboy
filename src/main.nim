@@ -1,10 +1,8 @@
 import dom, sugar, intsets
-import jscanvas
 
 from draw import Drawable
 from game import Game, GameInstance, loadAssetsAndStart, registerGameObject
 from gameobj import GameObject, addCollider
-import player
 import collision
 
 

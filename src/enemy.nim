@@ -4,5 +4,5 @@ from gameobj import GameObject
 type
     Enemy* = ref object of GameObject
 
-method update*(self: Enemy) =
+method update*(self: Enemy, deltatime: float) =
     discard

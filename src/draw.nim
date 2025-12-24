@@ -21,7 +21,7 @@ type
 # Here we just wrap an import around the JS Image class directly
 proc newImageElement*(): ImageElement {.importcpp: "new Image()", constructor.}
 
-method draw*(self: Drawable, context: CanvasContext) = 
+method draw*(self: Drawable, context: CanvasContext) {.base.} = 
     if self.enabled:
         var global = self.getGlobalLocation()
         context.fillStyle = self.color
@@ -36,7 +36,7 @@ method draw*(self: SpriteDrawable, context: CanvasContext) =
             context.drawImage(self.spriteImage,
                             round(global.x - self.size.w/2), round(global.y - self.size.h/2))
 
-method load*(self: Drawable, assetCache: Table[string, ImageElement]) =
+method load*(self: Drawable, assetCache: Table[string, ImageElement]) {.base.} =
     self.loaded = true
 
 method load*(self: SpriteDrawable, assetCache: Table[string, ImageElement]) =
