@@ -98,6 +98,9 @@ proc update*(self: Game) =
     # Check for key presses, player updating
     self.processInputs()
 
+    # Update player
+    self.player.update(self.deltaTime)
+
     # Game object updates
     for gameObject in self.gameObjectList:
         gameObject.update(self.deltaTime)
