@@ -1,7 +1,8 @@
 import intsets, tables, sugar
 from dom import document, getElementById, ImageElement, Event, window, requestAnimationFrame
+from math import round
 from std/paths import Path, extractFilename
-import std/times
+import std/times, std/strformat
 import jscanvas except Path
 
 from draw import Drawable, SpriteDrawable, draw, newImageElement
@@ -37,6 +38,7 @@ const assetList = [
 proc newGame*(): Game =
     let canvas = document.getElementById("gameCanvas").CanvasElement
     let ctx = canvas.getContext2d()
+    ctx.font = "5px"
     var player = newPlayer()
 
     return Game(player: player, canvas: canvas, canvasContext: ctx)
@@ -83,6 +85,9 @@ proc drawAll(self: Game) =
     # Draw player
     self.player.draw(self.canvasContext, self.assetCache)
 
+proc drawMetrics(self: Game) = 
+    self.canvasContext.fillText(fmt"FPS: {int(1000/self.deltatime)}", 0, 10)
+
 proc update*(self: Game) = 
     # Calculate deltatime
     var currentTime = getTime()
@@ -107,6 +112,9 @@ proc update*(self: Game) =
 
     # Draw scene
     self.drawAll()
+
+    # Draw Metrics
+    self.drawMetrics()
 
 proc tick(self: Game, time: float) =
     # Schedule next tick
