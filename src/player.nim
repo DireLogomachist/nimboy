@@ -2,7 +2,7 @@ import tables
 from dom import ImageElement
 import jscanvas except Path
 
-from gameobj import GameObject, addCollider
+import gameobj
 from collision import ColliderBox, ColliderCircle, draw
 from draw import Drawable, SpriteDrawable, load, draw
 from particle import ParticleSystem, StreamParticleSystem, update, draw
@@ -13,6 +13,11 @@ type
     Player* = ref object of GameObject
         speed*: float = 0.2
         trail*: StreamParticleSystem
+
+method onCollide*(self: Player) = 
+    if not self.onCollisionCooldown:
+        self.collisionTimer = self.collisionCooldown
+        self.onCollisionCooldown = true
 
 proc newPlayer*(): Player = 
     var player = Player()
@@ -42,4 +47,6 @@ method draw*(self: Player, context: CanvasContext, assetCache: Table[string, Ima
             collider.draw(context)
 
 method update*(self: Player, deltatime: float) = 
+    self.updateCollisionTimer(deltatime)
+
     self.trail.update(deltatime)

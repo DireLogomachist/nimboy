@@ -1,12 +1,13 @@
 import intsets, tables, sugar
 from dom import document, getElementById, ImageElement, Event, window, requestAnimationFrame
-from math import round
 from std/paths import Path, extractFilename
 import std/times, std/strformat
 import jscanvas except Path
 
+import collision
 from draw import Drawable, SpriteDrawable, draw, newImageElement
-from gameobj import GameObject, update, draw, checkCollisions
+from gameobj import GameObject, update, draw, checkCollisions, addCollider
+import enemy
 import player
 from utils import normalize
 
@@ -35,13 +36,31 @@ const assetList = [
     "src/assets/plummet_player.png"
 ]
 
+proc registerGameObject*(self: Game, gameObject: GameObject) =
+    self.gameObjectCounter = self.gameObjectCounter + 1
+    gameObject.id = self.gameObjectCounter
+    self.gameObjectList.add(gameObject)
+
 proc newGame*(): Game =
     let canvas = document.getElementById("gameCanvas").CanvasElement
     let ctx = canvas.getContext2d()
     ctx.font = "5px"
     var player = newPlayer()
 
-    return Game(player: player, canvas: canvas, canvasContext: ctx)
+    var game = Game(player: player, canvas: canvas, canvasContext: ctx)
+
+    var testEnemy = Enemy()
+    testEnemy.loc = (x:125, y:125)
+    testEnemy.sprite = Drawable(loc:(x:0, y:0), size:(w:20, h:20))
+    testEnemy.sprite.parent = testEnemy
+
+    var col: ColliderBox = ColliderBox(size:(w:50, h:50))
+    col.drawOutline = true
+
+    testEnemy.addCollider(col)
+    game.registerGameObject(testEnemy)
+
+    return game
 
 proc GameInstance*(): Game =
     var game {.global.}: Game
@@ -86,6 +105,7 @@ proc drawAll(self: Game) =
     self.player.draw(self.canvasContext, self.assetCache)
 
 proc drawMetrics(self: Game) = 
+    self.canvasContext.fillStyle = "#294139"
     self.canvasContext.fillText(fmt"FPS: {int(1000/self.deltatime)}", 0, 10)
 
 proc update*(self: Game) = 
@@ -107,8 +127,15 @@ proc update*(self: Game) =
     self.player.update(self.deltaTime)
 
     # Game object updates
-    for gameObject in self.gameObjectList:
-        gameObject.update(self.deltaTime)
+    var deleteList: seq[int]
+    for i in countup(0, self.gameObjectList.len - 1):
+        self.gameObjectList[i].update(self.deltaTime)
+        if self.gameObjectList[i].dead:
+            deleteList.add(i)
+    
+    # Remove dead objects
+    for i in countup(0, deleteList.len - 1):
+        self.gameObjectList.delete(deleteList[i] - i)
 
     # Draw scene
     self.drawAll()
@@ -122,11 +149,6 @@ proc tick(self: Game, time: float) =
 
     # Update game state
     self.update()
-
-proc registerGameObject*(self: Game, gameObject: GameObject) =
-    self.gameObjectCounter = self.gameObjectCounter + 1
-    gameObject.id = self.gameObjectCounter
-    self.gameObjectList.add(gameObject)
 
 proc assetReady(self: Game, asset: string, image: ImageElement, e: Event) =
     self.assetCounter += 1

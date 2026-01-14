@@ -25,6 +25,7 @@ type
 
 method draw*(self: Particle, context: CanvasContext) = 
     var global = self.getGlobalLocation()
+    context.fillStyle = self.color
     context.fillRect(round(global.x - self.size.w/2), round(global.y - self.size.h/2),
                      self.size.w, self.size.h)
 
@@ -43,7 +44,7 @@ method spawn*(self: ParticleSystem) =
         newParticle.velocity = self.particleVelocity
     else:
         var newParticle = Particle()
-        newParticle.size = (w: 2, h: 2)
+        newParticle.size = (w: 1, h: 1)
         newParticle.loc = self.getGlobalLocation()
         newParticle.velocity = self.particleVelocity
         self.particles.add(newParticle)
