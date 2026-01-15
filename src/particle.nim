@@ -36,6 +36,8 @@ method update*(self: Particle, deltatime: float) =
         self.lifetime  = self.lifetime + deltatime/1000
 
 method spawn*(self: ParticleSystem) = 
+    if not self.enabled:
+        return
     if self.particleFreeBuffer.len > 0:
         var newParticle = self.particles[self.particleFreeBuffer.pop()]
         newParticle.enabled = true

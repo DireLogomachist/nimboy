@@ -11,13 +11,19 @@ import transform
 
 type
     Player* = ref object of GameObject
+        health*: int = 3
         speed*: float = 0.2
-        trail*: StreamParticleSystem
+        trail: StreamParticleSystem
+
+method die(self: Player) = 
+    self.trail.enabled = false
+    echo "Played died"
 
 method onCollide*(self: Player) = 
     if not self.onCollisionCooldown:
         self.collisionTimer = self.collisionCooldown
         self.onCollisionCooldown = true
+        self.health -= 1
 
 proc newPlayer*(): Player = 
     var player = Player()
@@ -50,3 +56,6 @@ method update*(self: Player, deltatime: float) =
     self.updateCollisionTimer(deltatime)
 
     self.trail.update(deltatime)
+
+    if self.health <= 0:
+        self.die()
