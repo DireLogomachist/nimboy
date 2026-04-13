@@ -29,7 +29,7 @@ proc newPlayer*(): Player =
     var player = Player()
     player.id = 0
     player.loc.x = 78
-    player.loc.y = 78
+    player.loc.y = 28
     player.sprite = SpriteDrawable()
     player.sprite.parent = player
 
@@ -53,7 +53,7 @@ method draw*(self: Player, context: CanvasContext, assetCache: Table[string, Ima
             collider.draw(context)
 
 method update*(self: Player, deltatime: float) = 
-    self.updateCollisionTimer(deltatime)
+    procCall self.GameObject.update(deltatime)
 
     self.trail.update(deltatime)
 

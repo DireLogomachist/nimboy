@@ -11,25 +11,15 @@ type
         sprite*: Drawable
         enabled*: bool = true
         dead*: bool = false
+        lifeTimer*: float = 0.0f
 
         colliders*: seq[Collider]
         onCollisionCooldown*: bool = false
         collisionCooldown*: float = 0.5f
         collisionTimer*: float = 0.0f
 
-method update*(self: GameObject, deltatime: float) {.base.} = 
-    discard
-
 method onCollide*(self: GameObject) {.base.} = 
     discard
-
-proc draw*(self: GameObject, context: CanvasContext) = 
-    if self.sprite != nil:
-        self.sprite.draw(context)
-
-    for collider in self.colliders:
-        if collider.drawOutline:
-            collider.draw(context)
 
 proc updateCollisionTimer*(self: GameObject, deltatime: float) = 
     if self.onCollisionCooldown:
@@ -50,3 +40,15 @@ proc checkCollisions*(self: GameObject, target: GameObject): bool =
                 self.onCollide()
                 return true
     return false
+
+method update*(self: GameObject, deltatime: float) {.base.} = 
+    self.lifeTimer = self.lifeTimer + deltatime/1000
+    self.updateCollisionTimer(deltatime)
+
+proc draw*(self: GameObject, context: CanvasContext) = 
+    if self.sprite != nil:
+        self.sprite.draw(context)
+
+    for collider in self.colliders:
+        if collider.drawOutline:
+            collider.draw(context)

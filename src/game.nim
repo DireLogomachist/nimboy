@@ -25,7 +25,7 @@ type
         canvasContext*: CanvasContext
         canvasColor* = cstring("#7b8210")
         canvasWidth* = 512
-        deltaTime*: float
+        deltaTime*: float = 0.0f
         lastUpdate*: Time
 
     Key* {.pure.} = enum
@@ -47,17 +47,9 @@ proc newGame*(): Game =
     ctx.font = "5px"
     var player = newPlayer()
 
-    var game = Game(player: player, canvas: canvas, canvasContext: ctx)
+    var game = Game(player: player, canvas: canvas, canvasContext: ctx, lastUpdate: getTime())
 
-    var testEnemy = Enemy()
-    testEnemy.loc = (x:125, y:125)
-    testEnemy.sprite = Drawable(loc:(x:0, y:0), size:(w:20, h:20))
-    testEnemy.sprite.parent = testEnemy
-
-    var col: ColliderBox = ColliderBox(size:(w:50, h:50))
-    col.drawOutline = true
-
-    testEnemy.addCollider(col)
+    var testEnemy = newDiver(78, 150)
     game.registerGameObject(testEnemy)
 
     return game
