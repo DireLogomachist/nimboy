@@ -31,6 +31,9 @@ method destroy*(self: Enemy) =
     self.parent = nil
 
 method die*(self: Enemy) = 
+    # disable collisions
+    # change sprite, death particles
+    # after wait, disable and destroy
     self.destroy()
 
 method update*(self: Enemy, deltatime: float) =
@@ -65,6 +68,65 @@ method update*(self: Diver, deltatime: float) =
 
     if self.loc.y < 0.0f:
         self.die()
+
+    if self.health <= 0:
+        self.die()
+
+## Exploder
+
+type
+    Exploder* = ref object of Enemy
+        speed*: float = 0.08f
+        targetPos*: (float, float)
+        reachedTarget*: bool = false
+        detonationTimer*: float = 0.0f
+        detonationDelay*: float = 0.5f
+        isDetonating*: bool = false
+
+proc newExploder*(x: float, y: float, targetX: float, targetY: float): Exploder =
+    var e = Exploder()
+    e.loc = (x: x, y: y)
+    e.targetPos = (x: targetX, y: targetY)
+    e.sprite = Drawable(loc: (x: 0, y: 0), size: (w: 8, h: 8))
+    e.sprite.parent = e
+    
+    var col: ColliderBox = ColliderBox(size: (w: 8, h: 8))
+    e.addCollider(col)
+
+    return e
+
+method update*(self: Exploder, deltatime: float) =
+    procCall self.GameObject.update(deltatime)
+
+    if not self.isDetonating:
+        # Approach target position
+        if not self.reachedTarget:
+            let dx = self.targetPos[0] - self.loc.x
+            let dy = self.targetPos[1] - self.loc.y
+            let dist = math.sqrt(dx * dx + dy * dy)
+            
+            if dist > 2.0f:
+                let dirX = dx / dist
+                let dirY = dy / dist
+                self.loc.x += dirX * self.speed * deltatime
+                self.loc.y += dirY * self.speed * deltatime
+            else:
+                self.reachedTarget = true
+        
+        # Wait at target, then detonate
+        if self.reachedTarget and self.lifeTimer > 1.0f:
+            self.isDetonating = true
+            self.detonationTimer = 0.0f
+            # Swap to large explosion collider and sprite
+            self.colliders.setLen(0)
+            var explosionCol: ColliderBox = ColliderBox(size: (w: 40, h: 40))
+            self.addCollider(explosionCol)
+            self.sprite.size = (w: 40, h: 40)
+    else:
+        # Detonation active—count down
+        self.detonationTimer += deltatime / 1000.0f
+        if self.detonationTimer > self.detonationDelay:
+            self.die()
 
     if self.health <= 0:
         self.die()

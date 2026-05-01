@@ -49,7 +49,7 @@ proc newGame*(): Game =
 
     var game = Game(player: player, canvas: canvas, canvasContext: ctx, lastUpdate: getTime())
 
-    var testEnemy = newDiver(78, 150)
+    var testEnemy = newExploder(78, 150, 78, 25)
     game.registerGameObject(testEnemy)
 
     return game
