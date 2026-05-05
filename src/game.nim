@@ -9,6 +9,7 @@ from draw import Drawable, SpriteDrawable, draw, newImageElement
 from gameobj import GameObject, update, draw, checkCollisions, addCollider
 import enemy
 import player
+import level
 from utils import normalize
 
 
@@ -27,6 +28,9 @@ type
         canvasWidth* = 512
         deltaTime*: float = 0.0f
         lastUpdate*: Time
+        levelTimer*: float = 0.0f
+        nextSpawnIdx*: int = 0
+        currentLevel*: seq[SpawnEvent]
 
     Key* {.pure.} = enum
         LeftArrow = 37, UpArrow = 38,
@@ -47,10 +51,7 @@ proc newGame*(): Game =
     ctx.font = "5px"
     var player = newPlayer()
 
-    var game = Game(player: player, canvas: canvas, canvasContext: ctx, lastUpdate: getTime())
-
-    var testEnemy = newExploder(78, 150, 78, 25)
-    game.registerGameObject(testEnemy)
+    var game = Game(player: player, canvas: canvas, canvasContext: ctx, lastUpdate: getTime(), currentLevel: Level1)
 
     return game
 
@@ -62,6 +63,22 @@ proc GameInstance*(): Game =
     else:
         return game
 
+proc spawnEnemy(self: Game, spawnEvent: SpawnEvent) =
+    case spawnEvent.enemyType
+    of DiverSpawn:
+        var e = newDiver(spawnEvent.x, spawnEvent.y)
+        self.registerGameObject(e)
+    of ExploderSpawn:
+        var e = newExploder(spawnEvent.x, spawnEvent.y, spawnEvent.targetX, spawnEvent.targetY)
+        self.registerGameObject(e)
+    of WaverSpawn:
+        discard  # TODO: implement Waver
+
+proc updateLevelSpawns(self: Game) =
+    while self.nextSpawnIdx < self.currentLevel.len and 
+          self.levelTimer >= self.currentLevel[self.nextSpawnIdx].triggerTime:
+        self.spawnEnemy(self.currentLevel[self.nextSpawnIdx])
+        self.nextSpawnIdx += 1
 proc processInputs(self: Game) = 
     # Player movement
     var xMove = 0
@@ -105,6 +122,12 @@ proc update*(self: Game) =
     var currentTime = getTime()
     self.deltaTime = float(inMilliseconds(currentTime - self.lastUpdate))
     self.lastUpdate = currentTime
+
+    # Update level timer
+    self.levelTimer += self.deltaTime / 1000.0f
+
+    # Check level spawns
+    self.updateLevelSpawns()
 
     # Check collisions of player against all objects
     self.collisionMap.clear()
