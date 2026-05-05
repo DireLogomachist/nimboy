@@ -48,7 +48,7 @@ proc registerGameObject*(self: Game, gameObject: GameObject) =
 proc newGame*(): Game =
     let canvas = document.getElementById("gameCanvas").CanvasElement
     let ctx = canvas.getContext2d()
-    ctx.font = "5px"
+    ctx.font = "8px monospace"
     var player = newPlayer()
 
     var game = Game(player: player, canvas: canvas, canvasContext: ctx, lastUpdate: getTime(), currentLevel: Level1)

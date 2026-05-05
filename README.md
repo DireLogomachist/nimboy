@@ -1,4 +1,4 @@
-## NIMBOY ##
+## PLUMMET ##
 
 A small HTML5 game created using [Nim](https://nim-lang.org/).
 
