@@ -1,5 +1,6 @@
 import jscanvas except Path
 from math import round
+import random
 
 from draw import Drawable
 import gameobj
@@ -22,6 +23,10 @@ type
     StreamParticleSystem* = ref object of ParticleSystem
         spawnDirection*: float = 0.0f
         spawnSpread*: float = 0.0f
+
+    LineParticleSystem* = ref object of ParticleSystem
+        lineLength*: float = 156.0f
+        isHorizontal*: bool = true
 
 method draw*(self: Particle, context: CanvasContext) = 
     var global = self.getGlobalLocation()
@@ -68,3 +73,32 @@ method update*(self: ParticleSystem, deltatime: float) =
         if particle.lifetime > self.particleLifetime:
             particle.enabled = false
             self.particleFreeBuffer.add(i)
+
+method spawn*(self: LineParticleSystem) =
+    if not self.enabled:
+        return
+    
+    var randomOffset = random.rand(0.0 .. self.lineLength)
+    
+    if self.particleFreeBuffer.len > 0:
+        var newParticle = self.particles[self.particleFreeBuffer.pop()]
+        newParticle.enabled = true
+        newParticle.lifetime = 0.0f
+        var spawnLoc = self.getGlobalLocation()
+        if self.isHorizontal:
+            spawnLoc.x += randomOffset
+        else:
+            spawnLoc.y += randomOffset
+        newParticle.loc = spawnLoc
+        newParticle.velocity = self.particleVelocity
+    else:
+        var newParticle = Particle()
+        newParticle.size = (w: 1, h: 1)
+        var spawnLoc = self.getGlobalLocation()
+        if self.isHorizontal:
+            spawnLoc.x += randomOffset
+        else:
+            spawnLoc.y += randomOffset
+        newParticle.loc = spawnLoc
+        newParticle.velocity = self.particleVelocity
+        self.particles.add(newParticle)
