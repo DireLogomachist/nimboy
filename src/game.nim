@@ -71,8 +71,9 @@ proc spawnEnemy(self: Game, spawnEvent: SpawnEvent) =
     of ExploderSpawn:
         var e = newExploder(spawnEvent.x, spawnEvent.y, spawnEvent.targetX, spawnEvent.targetY)
         self.registerGameObject(e)
-    of WaverSpawn:
-        discard  # TODO: implement Waver
+    of GridBombSpawn:
+        var e = newGridBomb(spawnEvent.x, spawnEvent.y)
+        self.registerGameObject(e)
 
 proc updateLevelSpawns(self: Game) =
     while self.nextSpawnIdx < self.currentLevel.len and 

@@ -80,7 +80,7 @@ type
         targetPos*: (float, float)
         reachedTarget*: bool = false
         detonationTimer*: float = 0.0f
-        detonationDelay*: float = 0.5f
+        detonationDuration*: float = 0.5f
         isDetonating*: bool = false
 
 proc newExploder*(x: float, y: float, targetX: float, targetY: float): Exploder =
@@ -125,8 +125,42 @@ method update*(self: Exploder, deltatime: float) =
     else:
         # Detonation active—count down
         self.detonationTimer += deltatime / 1000.0f
-        if self.detonationTimer > self.detonationDelay:
+        if self.detonationTimer > self.detonationDuration:
             self.die()
 
     if self.health <= 0:
         self.die()
+
+## GridBomb
+
+type
+    GridBomb* = ref object of Enemy
+        detonationTimer*: float = 2.0f
+        detonationDuration*: float = 0.5f
+
+proc newGridBomb*(x: float, y: float): GridBomb =
+    var g = GridBomb()
+    g.loc = (x: x, y: y)
+    g.sprite = Drawable(loc: (x: 0, y: 0), size: (w: 2, h: 2))
+    g.sprite.parent = g
+
+    var col: ColliderBox = ColliderBox(size: (w: 39, h: 39))
+    col.enabled = false
+    g.addCollider(col)
+
+    return g
+
+method update*(self: GridBomb, deltatime: float) =
+    procCall self.GameObject.update(deltatime)
+
+    # Countdown
+    if self.detonationTimer > 0.0:
+        self.detonationTimer -= deltatime / 1000.0
+        if self.detonationTimer < 0.0:
+            self.sprite.size = (w: 39, h: 39)
+            for collider in self.colliders:
+                collider.enabled = true
+    else:
+        self.detonationDuration -= deltatime / 1000.0
+        if self.detonationDuration < 0.0:
+            self.die()

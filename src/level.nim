@@ -1,6 +1,6 @@
 type
   EnemySpawnType* = enum
-    DiverSpawn, ExploderSpawn, WaverSpawn
+    DiverSpawn, ExploderSpawn, GridBombSpawn
   
   SpawnEvent* = object
     triggerTime*: float      # Seconds into level

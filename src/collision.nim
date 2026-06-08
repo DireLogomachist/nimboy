@@ -6,6 +6,7 @@ from utils import normalize, magnitude
 
 type
     Collider* = ref object of TransformObject
+        enabled*: bool = true
         drawOutline*: bool = false
 
     ColliderBox* = ref object of Collider
@@ -18,6 +19,8 @@ method collisionCheck*(a: Collider, b: Collider): bool {.base.} =
     discard
 
 method collisionCheck*(a: ColliderBox, b: ColliderBox): bool =
+    if not a.enabled or not b.enabled:
+        return false
     var a_global = a.getGlobalLocation()
     var b_global = b.getGlobalLocation()
     if ((a_global.x - a.size.w/2 + a.size.w) < (b_global.x - b.size.w/2)):
@@ -31,6 +34,8 @@ method collisionCheck*(a: ColliderBox, b: ColliderBox): bool =
     return true
 
 method collisionCheck*(a: ColliderCircle, b: ColliderCircle): bool = 
+    if not a.enabled or not b.enabled:
+        return false
     var a_global = a.getGlobalLocation()
     var b_global = b.getGlobalLocation()
     var collider_dist = sqrt((a_global.x - b_global.x)^2 + (a_global.y - b_global.y)^2)
@@ -40,6 +45,8 @@ method collisionCheck*(a: ColliderCircle, b: ColliderCircle): bool =
     return false
 
 method collisionCheck*(circle: ColliderCircle, box: ColliderBox): bool = 
+    if not circle.enabled or not box.enabled:
+        return false
     var box_global = box.getGlobalLocation()
     var circle_global = circle.getGlobalLocation()
 
@@ -82,15 +89,17 @@ method draw*(self: Collider, context: CanvasContext) {.base.} =
     discard
 
 method draw*(self: ColliderBox, context: CanvasContext) =
-    var global = self.getGlobalLocation()
-    context.beginPath()
-    context.strokeRect(global.x - self.size.w/2, global.y - self.size.h/2,
-                       self.size.w, self.size.h)
-    context.closePath()
+    if self.enabled:
+        var global = self.getGlobalLocation()
+        context.beginPath()
+        context.strokeRect(global.x - self.size.w/2, global.y - self.size.h/2,
+                        self.size.w, self.size.h)
+        context.closePath()
 
 method draw*(self: ColliderCircle, context: CanvasContext) =
-    var global = self.getGlobalLocation()
-    context.beginPath()
-    context.arc(global.x, global.y, self.radius, 0, Pi*2)
-    context.stroke()
-    context.closePath()
+    if self.enabled:
+        var global = self.getGlobalLocation()
+        context.beginPath()
+        context.arc(global.x, global.y, self.radius, 0, Pi*2)
+        context.stroke()
+        context.closePath()
