@@ -1,7 +1,7 @@
 import jscanvas except Path
 
 import transform
-from draw import Drawable, SpriteDrawable, draw
+import draw
 import collision
 
 
@@ -47,6 +47,9 @@ method update*(self: GameObject, deltatime: float) {.base.} =
 
 proc draw*(self: GameObject, context: CanvasContext) = 
     if self.sprite != nil:
+        if self.sprite.loaded != true:
+            self.sprite.load()
+
         self.sprite.draw(context)
 
     for collider in self.colliders:

@@ -141,7 +141,7 @@ type
 proc newGridBomb*(x: float, y: float): GridBomb =
     var g = GridBomb()
     g.loc = (x: x, y: y)
-    g.sprite = Drawable(loc: (x: 0, y: 0), size: (w: 2, h: 2))
+    g.sprite = SpriteDrawable(loc: (x: 0, y: 0), spriteFile: "gridbomb.png")
     g.sprite.parent = g
 
     var col: ColliderBox = ColliderBox(size: (w: 39, h: 39))

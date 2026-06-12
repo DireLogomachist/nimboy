@@ -1,4 +1,5 @@
 import transform
+import assets
 
 import dom, tables
 from math import round
@@ -36,10 +37,10 @@ method draw*(self: SpriteDrawable, context: CanvasContext) =
             context.drawImage(self.spriteImage,
                             round(global.x - self.size.w/2), round(global.y - self.size.h/2))
 
-method load*(self: Drawable, assetCache: Table[string, ImageElement]) {.base.} =
+method load*(self: Drawable) {.base.} =
     self.loaded = true
 
-method load*(self: SpriteDrawable, assetCache: Table[string, ImageElement]) =
+method load*(self: SpriteDrawable) =
     self.spriteImage = assetCache[self.spriteFile]
     self.spriteImage.width = self.size.w
     self.spriteImage.height = self.size.h

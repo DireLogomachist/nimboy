@@ -4,7 +4,7 @@ from std/paths import Path, extractFilename
 import std/times, std/strformat
 import jscanvas except Path
 
-import collision
+import assets
 from draw import Drawable, SpriteDrawable, draw, newImageElement
 from gameobj import GameObject, update, draw, checkCollisions, addCollider
 import enemy
@@ -16,7 +16,6 @@ from utils import normalize
 type
     Game* = ref object
         keyboard*: IntSet
-        assetCache*: Table[string, ImageElement]
         assetCounter: int
         player*: Player
         gameObjectCounter*: int = 0
@@ -35,10 +34,6 @@ type
     Key* {.pure.} = enum
         LeftArrow = 37, UpArrow = 38,
         RightArrow = 39, DownArrow = 40
-
-const assetList = [
-    "src/assets/plummet_player.png"
-]
 
 proc registerGameObject*(self: Game, gameObject: GameObject) =
     self.gameObjectCounter = self.gameObjectCounter + 1
@@ -112,7 +107,7 @@ proc drawAll(self: Game) =
         gameObject.draw(self.canvasContext)
 
     # Draw player
-    self.player.draw(self.canvasContext, self.assetCache)
+    self.player.draw(self.canvasContext)
 
 proc drawMetrics(self: Game) = 
     self.canvasContext.fillStyle = "#294139"
@@ -168,13 +163,18 @@ proc tick(self: Game, time: float) =
 
 proc assetReady(self: Game, asset: string, image: ImageElement, e: Event) =
     self.assetCounter += 1
-    self.assetCache[string(extractFilename(Path(asset)))] = image
+    assetCache[string(extractFilename(Path(asset)))] = image
+    echo fmt"Loaded {asset} - stored as {string(extractFilename(Path(asset)))}"
+
     # Once all loaded, start game tick
     if len(assetList) == self.assetCounter:
         self.tick(16)
 
 proc loadAssetsAndStart*(self: Game) = 
-    for assetFile in assetList:
-        var assetImage: ImageElement = newImageElement()
-        assetImage.onload = (event: Event) => self.assetReady(assetFile, assetImage, event)
-        assetImage.src = cstring(assetFile)
+    for i in countup(0, assetList.len - 1):
+        capture i:
+            echo fmt"Loading {i} -  {assetList[i]}"
+            var assetFile = assetList[i]
+            var assetImage: ImageElement = newImageElement()
+            assetImage.onload = (event: Event) => self.assetReady(assetFile, assetImage, event)
+            assetImage.src = cstring(assetFile)
