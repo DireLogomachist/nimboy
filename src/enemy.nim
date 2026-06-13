@@ -88,10 +88,11 @@ proc newExploder*(x: float, y: float, targetX: float, targetY: float): Exploder 
     var e = Exploder()
     e.loc = (x: x, y: y)
     e.targetPos = (x: targetX, y: targetY)
-    e.sprite = Drawable(loc: (x: 0, y: 0), size: (w: 8, h: 8))
+    e.sprite = SpriteDrawable(size: (w: 16, h: 16), spriteFile: "exploder.png")
     e.sprite.parent = e
     
-    var col: ColliderBox = ColliderBox(size: (w: 8, h: 8))
+    var col: ColliderBox = ColliderBox(size: (w: 10, h: 10))
+    col.drawOutline = true
     e.addCollider(col)
 
     return e
@@ -118,11 +119,11 @@ method update*(self: Exploder, deltatime: float) =
         if self.reachedTarget and self.lifeTimer > 1.0f:
             self.isDetonating = true
             self.detonationTimer = 0.0f
-            # Swap to large explosion collider and sprite
+            # Swap to large explosion collider
             self.colliders.setLen(0)
             var explosionCol: ColliderBox = ColliderBox(size: (w: 40, h: 40))
+            explosionCol.drawOutline = true
             self.addCollider(explosionCol)
-            self.sprite.size = (w: 40, h: 40)
     else:
         # Detonation active—count down
         self.detonationTimer += deltatime / 1000.0f
