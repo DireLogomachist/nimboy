@@ -45,9 +45,7 @@ proc newGame*(): Game =
     let ctx = canvas.getContext2d()
     ctx.font = "8px monospace"
     var player = newPlayer()
-
     var game = Game(player: player, canvas: canvas, canvasContext: ctx, lastUpdate: getTime(), currentLevel: Level1)
-
     return game
 
 proc GameInstance*(): Game =
@@ -75,6 +73,7 @@ proc updateLevelSpawns(self: Game) =
           self.levelTimer >= self.currentLevel[self.nextSpawnIdx].triggerTime:
         self.spawnEnemy(self.currentLevel[self.nextSpawnIdx])
         self.nextSpawnIdx += 1
+
 proc processInputs(self: Game) = 
     # Player movement
     var xMove = 0

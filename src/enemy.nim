@@ -31,8 +31,9 @@ method destroy*(self: Enemy) =
     self.parent = nil
 
 method die*(self: Enemy) = 
-    # disable collisions
-    # change sprite, death particles
+    for collider in self.colliders:
+        collider.enabled = false
+    self.sprite.enabled = false
     # after wait, disable and destroy
     self.destroy()
 
@@ -51,7 +52,7 @@ type
 proc newDiver*(x: float, y: float): Diver =
     var d = Diver()
     d.loc = (x: x, y: y)
-    d.sprite = Drawable(loc: (x: 0, y: 0), size: (w: 10, h: 10))
+    d.sprite = SpriteDrawable(size: (w: 16, h: 16), spriteFile: "diver.png")
     d.sprite.parent = d
     
     var col: ColliderBox = ColliderBox(size: (w: 10, h: 10))
