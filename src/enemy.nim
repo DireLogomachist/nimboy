@@ -141,11 +141,12 @@ type
 proc newGridBomb*(x: float, y: float): GridBomb =
     var g = GridBomb()
     g.loc = (x: x, y: y)
-    g.sprite = SpriteDrawable(loc: (x: 0, y: 0), spriteFile: "gridbomb.png")
+    g.sprite = SpriteDrawable(size: (w: 39, h: 39), spriteFile: "gridbomb.png")
     g.sprite.parent = g
 
     var col: ColliderBox = ColliderBox(size: (w: 39, h: 39))
     col.enabled = false
+    col.drawOutline = true
     g.addCollider(col)
 
     return g
@@ -157,7 +158,7 @@ method update*(self: GridBomb, deltatime: float) =
     if self.detonationTimer > 0.0:
         self.detonationTimer -= deltatime / 1000.0
         if self.detonationTimer < 0.0:
-            self.sprite.size = (w: 39, h: 39)
+            self.sprite.enabled = false
             for collider in self.colliders:
                 collider.enabled = true
     else:

@@ -36,8 +36,8 @@ proc newPlayer*(): Player =
     player.trail = StreamParticleSystem()
     player.trail.parent = player
     
-    var col: ColliderCircle = ColliderCircle(radius: 15)
-    col.drawOutline = true
+    var col: ColliderCircle = ColliderCircle(radius: 9)
+    #col.drawOutline = true
     player.addCollider(col)
     return player
 
